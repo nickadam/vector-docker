@@ -1,0 +1,34 @@
+version: '3.8'
+services:
+  vector:
+    image: nickadam/vector:0.24.1-debian
+    build: .
+    environment:
+      VECTOR_CONFIG_CONTENT: |
+        [sources.example]
+        type = "file"
+        include = ["/logs/mylog.log"]
+        read_from = "end"
+
+        [sinks.out]
+        type = "console"
+        inputs = ["example"]
+
+          [sinks.out.encoding]
+          codec = "json"
+    volumes:
+      - type: volume
+        source: logs
+        target: /logs
+
+  file-example:
+    image: alpine
+    command: sh -c 'while true; do date >> /logs/mylog.log; sleep 1; done'
+    volumes:
+      - type: volume
+        source: logs
+        target: /logs
+
+
+volumes:
+  logs:
