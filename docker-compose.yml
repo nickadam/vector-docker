@@ -1,21 +1,24 @@
 version: '3.8'
 services:
   vector:
-    image: nickadam/vector:0.24.1-debian
+    image: nickadam/vector:0.41.X-debian
     build: .
     environment:
       VECTOR_CONFIG_CONTENT: |
-        [sources.example]
-        type = "file"
-        include = ["/logs/mylog.log"]
-        read_from = "end"
+        sources:
+          mylog:
+            type: file
+            include:
+              - /logs/mylog.log
+            read_from: end
+        sinks:
+          out:
+            type: console
+            inputs:
+              - mylog
+            encoding:
+              codec: json
 
-        [sinks.out]
-        type = "console"
-        inputs = ["example"]
-
-          [sinks.out.encoding]
-          codec = "json"
     volumes:
       - type: volume
         source: logs

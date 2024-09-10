@@ -1,10 +1,12 @@
-FROM timberio/vector:0.24.1-debian
+FROM timberio/vector:0.41.X-debian as dl
 
 ADD https://github.com/krallin/tini/releases/download/v0.19.0/tini /usr/local/bin/tini
 
-COPY docker-entrypoint.sh /
+FROM timberio/vector:0.41.X-debian
 
-RUN chmod 755 /usr/local/bin/tini /docker-entrypoint.sh
+COPY --chmod=755 docker-entrypoint.sh /
+
+COPY --from=dl --chmod=755 /usr/local/bin/tini /usr/local/bin/tini
 
 ENTRYPOINT ["tini", "/docker-entrypoint.sh"]
 
